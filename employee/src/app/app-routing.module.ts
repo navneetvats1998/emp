@@ -3,7 +3,7 @@ import { LoginComponent } from './components/login/login.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth/auth.guard';
-import { NotFoundComponent } from './components/not-found/not-found.component';
+import { SignUpComponent } from './components/signup/signup.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -21,7 +21,7 @@ const routes: Routes = [
     loadChildren: () =>
       import('./modules/employee/user.module').then((m) => m.UserModule),
   },
-  { path: '**', component: NotFoundComponent },
+  { path: '**', component: SignUpComponent },
 ];
 
 @NgModule({

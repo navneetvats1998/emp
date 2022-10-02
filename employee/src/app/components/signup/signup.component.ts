@@ -3,11 +3,11 @@ import { FormGroup , FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 @Component({
-  selector: 'app-not-found',
-  templateUrl: './not-found.component.html',
-  styleUrls: ['./not-found.component.scss']
+  selector: 'app-signup',
+  templateUrl: './signup.component.html',
+  styleUrls: ['./signup.component.scss']
 })
-export class NotFoundComponent implements OnInit {
+export class SignUpComponent implements OnInit {
 signUpForm!:FormGroup;
 constructor( private auth :AuthService,private router: Router,
   private formBuilder: FormBuilder) {

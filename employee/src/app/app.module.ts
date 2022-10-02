@@ -7,7 +7,7 @@ import { LoginComponent } from './components/login/login.component';
 // import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 // import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
-import { NotFoundComponent } from './components/not-found/not-found.component';
+import { SignUpComponent } from './components/signup/signup.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialComponentsModule } from './material-component.module';
@@ -16,7 +16,7 @@ import { MaterialComponentsModule } from './material-component.module';
     AppComponent,
     LoginComponent,
     ForgotPasswordComponent,
-    NotFoundComponent,
+    SignUpComponent,
   ],
   imports: [
     BrowserModule,
