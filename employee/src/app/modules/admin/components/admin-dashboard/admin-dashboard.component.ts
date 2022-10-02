@@ -1,8 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatTable, MatTableDataSource } from '@angular/material/table';
-import { startWith, tap } from 'rxjs/operators';
+import { MatTableDataSource } from '@angular/material/table';
+import { AuthService } from 'src/app/services/auth/auth.service';
+
 import { DatastorageService } from '../datastorage.service';
 
 
@@ -10,24 +11,12 @@ import { DatastorageService } from '../datastorage.service';
 export interface PeriodicElement {
   username: string;
   ID: number;
-  email: number;
+  email: string;
   contact:string;
   password: string;
 }
 
-const ELEMENT_DATA: PeriodicElement[] = [
-  {ID: 1, username: 'Hydrogen', email: 1.0079, password: 'H' ,contact:"8447774123"},
-  {ID: 2, username: 'Helium', email: 4.0026, password: 'He',contact:"8447774123"},
-  {ID: 3, username: 'Lithium', email: 6.941, password: 'Li',contact:"8447774123"},
-  {ID: 4, username: 'Beryllium', email: 9.0122, password: 'Be',contact:"8447774123"},
-  {ID: 5, username: 'Boron', email: 10.811, password: 'B',contact:"8447774123"},
-  {ID: 6, username: 'Carbon', email: 12.0107, password: 'C',contact:"8447774123"},
-  {ID: 7, username: 'Nitrogen', email: 14.0067, password: 'N',contact:"8447774123"},
-  {ID: 8, username: 'Oxygen', email: 15.9994, password: 'O',contact:"8447774123"},
-  {ID: 9, username: 'Fluorine', email: 18.9984, password: 'F',contact:"8447774123"},
-  {ID: 10, username: 'Neon', email: 20.1797, password: 'Ne',contact:"8447774123"},
-  {ID: 11, username: 'Neon', email: 20.1797, password: 'Ne',contact:"8447774123"},
-];
+
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -36,55 +25,29 @@ const ELEMENT_DATA: PeriodicElement[] = [
 })
 
 export class AdminDashboardComponent implements OnInit {
+  edit:boolean = false;
 
   displayedColumns: string[] = ['ID', 'username', 'email', 'password','contact', 'action'];
   dataSource = new MatTableDataSource<any>();
+
  
  isLoading = true;
  
  pageNumber: number = 1;
-   VOForm: FormGroup;
+   Form: FormGroup;
    isEditableNew: boolean = true;
    constructor(
      private fb: FormBuilder,
-     private _formBuilder: FormBuilder ,public a :DatastorageService){}
+     private _formBuilder: FormBuilder ,public storage :DatastorageService , public auth:AuthService){}
  
    ngOnInit(): void {
-     this.VOForm = this._formBuilder.group({
-       VORows: this._formBuilder.array([])
-     });
- 
-      this.VOForm = this.fb.group({
-               VORows: this.fb.array(ELEMENT_DATA.map(val => this.fb.group({
-                 ID: new FormControl(val.ID),
-                 username: new FormControl(val.username),
-                 email: new FormControl(val.email),
-                 contact: new FormControl(val.contact),
-                 password: new FormControl(val.password),
-                 action: new FormControl('existingRecord'),
-                 isEditable: new FormControl(true),
-                 isNewRow: new FormControl(false),
-               })
-               )) //end of fb array
-             }); // end of form group cretation
-     this.isLoading = false;
-     this.dataSource = new MatTableDataSource((this.VOForm.get('VORows') as FormArray).controls);
-     this.dataSource.paginator = this.paginator;
- 
-     const filterPredicate = this.dataSource.filterPredicate;
-       this.dataSource.filterPredicate = (data: AbstractControl, filter) => {
-         return filterPredicate.call(this.dataSource, data.value, filter);
-       }
- 
-       //Custom filter according to username column
-     // this.dataSource.filterPredicate = (data: {username: string}, filterValue: string) =>
-     //   data.username.trim().toLowerCase().indexOf(filterValue) !== -1;
+    this.save();
    }
  
    @ViewChild(MatPaginator) paginator: MatPaginator;
- 
 
    ngAfterViewInit() {
+    
      this.dataSource.paginator = this.paginator;
      this.paginatorList = document.getElementsByClassName('mat-paginator-range-label');
  
@@ -96,52 +59,60 @@ export class AdminDashboardComponent implements OnInit {
    }
    
     applyFilter(event: Event) {
-     //  debugger;
      const filterValue = (event.target as HTMLInputElement).value;
      this.dataSource.filter = filterValue.trim().toLowerCase();
    }
  
  
-   // @ViewChild('table') table: MatTable<PeriodicElement>;
+
+/**
+ * We're getting the FormArray from the FormGroup, inserting a new FormGroup into the FormArray, and
+ * then setting the dataSource to the FormArray
+ */
    AddNewRow() {
-     // this.getBasicDetails();
-     const control = this.VOForm.get('VORows') as FormArray;
-     control.insert(0,this.initiateVOForm());
+     const control = this.Form.get('FormRows') as FormArray;
+     control.insert(0,this.initiateForm());
      this.dataSource = new MatTableDataSource(control.controls)
-     // control.controls.unshift(this.initiateVOForm());
-     // this.openPanel(panel);
-       // this.table.renderRows();
-       // this.dataSource.data = this.dataSource.data;
    }
  
-   // this function will enabled the select field for editd
-   EditSVO(VOFormElement:any, i:any) {
- 
-     // VOFormElement.get('VORows').at(i).get('username').disabled(false)
-     VOFormElement.get('VORows').at(i).get('isEditable').patchValue(false);
-     // this.isEditableNew = true;
- 
+
+/**
+ * The function takes in the form element and the index of the row that is being edited. It then sets
+ * the isEditable property of the row to false, which will hide the edit button and show the save
+ * button
+ * @param {any} FormElement - The form group that contains the form array.
+ * @param {any} i - the index of the row in the FormArray
+ */
+   Edit(FormElement:any, i:any) {
+     FormElement.get('FormRows').at(i).get('isEditable').patchValue(false);
+     this.edit = true;
    }
  
    // On click of correct button in table (after click on edit) this method will call
-   SaveVO(VOFormElement:any, i:any) {
-    debugger
-     // alert('SaveVO')
- 
-     VOFormElement.get('VORows').at(i).get('isEditable').patchValue(true);
-     this.a.data.push(this.VOForm.value.VORows);
-     
+   Save(FormElement:any, i:any) {
+     if(!this.edit){
+     FormElement.get('FormRows').at(i).get('isEditable').patchValue(true);
+     this.storage.data.push(this.Form.value.FormRows[0]);
+     this.save();
+     }else{
+      FormElement.get('FormRows').at(i-1).get('isEditable').patchValue(true);
+      this.storage.data.push(this.Form.value.FormRows[i]);
+     this.edit = false;
+     }
    }
  
    // On click of cancel button in the table (after click on edit) this method will call and reset the previous data
-   CancelSVO(VOFormElement:any, i:any) {
-     VOFormElement.get('VORows').at(i).get('isEditable').patchValue(true);
+   Cancel(FormElement:any, i:any) {
+     FormElement.get('FormRows').at(i).get('isEditable').patchValue(true);
+     this.storage.data.splice(i,1);
+     this.save();
    }
  
  
  paginatorList: HTMLCollectionOf<Element>;
  idx: number;
  onPaginateChange(paginator: MatPaginator, list: HTMLCollectionOf<Element>) {
+  
       setTimeout((idx:any) => {
           let from = (paginator.pageSize * paginator.pageIndex) + 1;
  
@@ -160,20 +131,63 @@ export class AdminDashboardComponent implements OnInit {
  }
  
  
-   initiateVOForm(): FormGroup {
-    debugger
-    let i = this.VOForm.value.VORows.length;
+   initiateForm(): FormGroup {
+    
+    let i = this.storage.data.length;
      return this.fb.group({
  
-       ID: new FormControl(i),
-                 username: new FormControl(''),
-                 email: new FormControl(''),
-                 password: new FormControl(''),
-                 contact: new FormControl(''),
+       ID: new FormControl(i+1),
+                 username: new FormControl('',Validators.required),
+                 email: new FormControl('',Validators.email),
+                 password: new FormControl('',Validators.required),
+                 contact: new FormControl('',Validators.compose([Validators.required,Validators.pattern(
+                  '(([+][(]?[0-9]{1,3}[)]?)|([(]?[0-9]{4}[)]?))\s*[)]?[-\s\.]?[(]?[0-9]{1,3}[)]?([-\s\.]?[0-9]{3})([-\s\.]?[0-9]{3,4})'
+                    )])),
+                 role: new FormControl('employee'),
                  action: new FormControl('newRecord'),
                  isEditable: new FormControl(false),
                  isNewRow: new FormControl(true),
      });
    }
+
+   save(){
+    this.Form = this._formBuilder.group({
+      FormRows: this._formBuilder.array([])
+    });
+
+     this.Form = this.fb.group({
+              FormRows: this.fb.array(this.storage.data.map(val => this.fb.group({
+                ID: new FormControl(val.ID),
+                username: new FormControl(val.username ,Validators.required),
+                email: new FormControl(val.email ,Validators.email),
+                contact: new FormControl(val.contact ,Validators.compose([Validators.required,Validators.pattern(
+                  '(([+][(]?[0-9]{1,3}[)]?)|([(]?[0-9]{4}[)]?))\s*[)]?[-\s\.]?[(]?[0-9]{1,3}[)]?([-\s\.]?[0-9]{3})([-\s\.]?[0-9]{3,4})'
+                    )])),
+                password: new FormControl(val.password , Validators.required),
+                role: new FormControl(val.role),
+                action: new FormControl('existingRecord'),
+                isEditable: new FormControl(true),
+                isNewRow: new FormControl(false),
+              })
+              )) 
+            }); 
+    this.isLoading = false;
+    this.dataSource = new MatTableDataSource((this.Form.get('FormRows') as FormArray).controls);
+    this.dataSource.paginator = this.paginator;
+
+    const filterPredicate = this.dataSource.filterPredicate;
+      this.dataSource.filterPredicate = (data: AbstractControl, filter) => {
+        return filterPredicate.call(this.dataSource, data.value, filter);
+      }
+    
+   }
+   deleteitem(FormElement:any, i:any){
+    this.storage.data.splice(i,1);
+    this.save();
+   }
+
+   logout(){
+    this.auth.logout();
+  }
  
 }

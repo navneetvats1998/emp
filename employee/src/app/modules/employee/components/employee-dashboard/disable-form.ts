@@ -12,6 +12,7 @@ export class DisableControlDirective {
   @Input() set disableControl( condition : boolean ) {
     const action = condition ? 'disable' : 'enable';
     this.ngControl.control[action]();
+    // this.ngControl.control[action]();
   }
 
  

@@ -1,19 +1,22 @@
+<h1 style="color: red;">WELCOME ADMIN</h1>
+<div> <button class=" btn-primary nav-item text-white" (click)="logout()" >logout</button></div><br>
 <div class="mat-elevation-z8">
-  <button><mat-icon (click)="AddNewRow()" class="add-button">add_box</mat-icon></button>
+  <label style="color: red;">Add Employee</label><br>
+  <button><mat-icon (click)="AddNewRow()" class="add-button">add </mat-icon></button>
   <br />
   <mat-form-field style="width: 40%">
     <mat-label>Filter</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
   </mat-form-field>
-  <form [formGroup]="VOForm" autocomplete="off">
-    <ng-container formArrayName="VORows">
+  <form [formGroup]="Form" autocomplete="off">
+    <ng-container formArrayName="FormRows">
       <table #table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
         <!-- ID Column -->
         <ng-container matColumnDef="ID">
           <th mat-header-cell *matHeaderCellDef>ID No. </th>
           <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
-            <mat-form-field style="width: 70px;" display="none">
+            <mat-form-field style="width: 20px;" display="none">
               <input matInput type="text" formControlName="ID" [readonly]="true">
             </mat-form-field>
         </ng-container>
@@ -23,12 +26,11 @@
           <th mat-header-cell *matHeaderCellDef>User Name </th>
           <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
 
-            <!-- <span [hidden]="VOForm.get('VORows').value[i].isEditable"> -->
             <mat-form-field style="width: 70px;"
-              [hidden]="VOForm.get('VORows').value[i].isEditable? 'none' : 'legacy'">
-              <input matInput type="text" formControlName="username" [readonly]="VOForm.get('VORows').value[i].isEditable">
+              [hidden]="Form.get('FormRows').value[i].isEditable? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="username" [readonly]="Form.get('FormRows').value[i].isEditable">
             </mat-form-field>
-            <!-- </span> -->
+    
 
           </td>
         </ng-container>
@@ -37,66 +39,58 @@
         <ng-container matColumnDef="email">
           <th mat-header-cell *matHeaderCellDef>Email </th>
           <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
-            <!-- [hidden]="true ? 'outline': 'fill'" -->
-            <!-- <span [hidden]="VOForm.get('VORows').value[i].isEditable"> -->
-            <mat-form-field style="width: 70px;"
-              [hidden]="VOForm.get('VORows').value[i].isEditable? 'none' : 'legacy'">
-              <input matInput type="email" formControlName="email" [readonly]="VOForm.get('VORows').value[i].isEditable">
+            <mat-form-field style="width: 150px;"
+              [hidden]="Form.get('FormRows').value[i].isEditable? 'none' : 'legacy'">
+              <input matInput type="email"  formControlName="email" [readonly]="Form.get('FormRows').value[i].isEditable">
             </mat-form-field>
-            <!-- </span> -->
           </td>
         </ng-container>
-
+      <!-- Contact Column -->
         <ng-container matColumnDef="contact">
           <th mat-header-cell *matHeaderCellDef>Contact </th>
           <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
-            <!-- [hidden]="true ? 'outline': 'fill'" -->
-            <!-- <span [hidden]="VOForm.get('VORows').value[i].isEditable"> -->
-            <mat-form-field style="width: 70px;"
-              [hidden]="VOForm.get('VORows').value[i].isEditable? 'none' : 'legacy'">
-              <input matInput type="text" formControlName="contact" [readonly]="VOForm.get('VORows').value[i].isEditable">
+            <mat-form-field style="width: 150px;"
+              [hidden]="Form.get('FormRows').value[i].isEditable? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="contact" [readonly]="Form.get('FormRows').value[i].isEditable">
             </mat-form-field>
-            <!-- </span> -->
           </td>
         </ng-container>
         <!-- password Column -->
         <ng-container matColumnDef="password">
           <th mat-header-cell *matHeaderCellDef>Password </th>
           <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
-            <!-- <span [hidden]="VOForm.get('VORows').value[i].isEditable"> -->
             <mat-form-field style="width: 70px;"
-              [hidden]="VOForm.get('VORows').value[i].isEditable? 'none' : 'legacy'">
-              <input matInput type="text" formControlName="password" [readonly]="VOForm.get('VORows').value[i].isEditable">
+              [hidden]="Form.get('FormRows').value[i].isEditable? 'none' : 'legacy'">
+              <input matInput type="text" formControlName="password" [readonly]="Form.get('FormRows').value[i].isEditable">
             </mat-form-field>
-            <!-- </span> -->
           </td>
         </ng-container>
 
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef> Action </th>
           <td mat-cell *matCellDef="let element; let i = index" [formGroup]="element">
-            <button mat-icon-button class="material-icons app-toolbar-menu save-button"
-                                    matTooltip="Save Changes" (click)="SaveVO(VOForm,i)"
-                                    *ngIf="!VOForm.get('VORows').value[i].isEditable" color="primary">
+            <button [disabled]="element.invalid" mat-icon-button class="material-icons app-toolbar-menu save-button"
+                                    matTooltip="Save Changes" (click)="Save(Form,i+1)"
+                                    *ngIf="!Form.get('FormRows').value[i].isEditable" color="primary">
                                     <mat-icon>check_circle</mat-icon>
                                 </button>
 
             <button mat-icon-button class="material-icons app-toolbar-menu cancel-button"
                                     matTooltip="Cancel Changes" color="warn"
-                                    (click)="CancelSVO(VOForm,i)"
-                                    *ngIf="!VOForm.get('VORows').value[i].isEditable">
+                                    (click)="Cancel(Form,i)"
+                                    *ngIf="!Form.get('FormRows').value[i].isEditable">
                                     <mat-icon>cancel</mat-icon>
                                 </button>
 
             <button mat-icon-button class="material-icons app-toolbar-menu save-button"
-                                    *ngIf="VOForm.get('VORows').value[i].isEditable"
-                                    matTooltip="Edit" color="primary" (click)="EditSVO(VOForm,i)">
+                                    *ngIf="Form.get('FormRows').value[i].isEditable"
+                                    matTooltip="Edit" color="primary" (click)="Edit(Form,i)">
                                     <mat-icon>edit</mat-icon>
                                 </button>
 
             <button mat-icon-button class="material-icons app-toolbar-menu delete-button"
-                                    *ngIf="VOForm.get('VORows').value[i].isEditable"
-                                    matTooltip="Delete" color="warn">
+                                    *ngIf="Form.get('FormRows').value[i].isEditable"
+                                    matTooltip="Delete" color="warn" (click)="deleteitem(Form,i)">
                                     <mat-icon>delete</mat-icon>
                                 </button>
           </td>
@@ -119,8 +113,8 @@
   </mat-progress-spinner>
 </mat-card>
 
-  <!-- <mat-paginator-goto [length]="100" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]"
-		(page)="paginationChange($event)"></mat-paginator-goto> -->
-  <mat-paginator [pageSizeOptions]="[5, dataSource.data.length>8? dataSource.data.length:0  ]" showFirstLastButtons>
+  <mat-paginator [pageSizeOptions]="[25 ,50 ,100 ]" showFirstLastButtons>
   </mat-paginator>
 </div>
+
+

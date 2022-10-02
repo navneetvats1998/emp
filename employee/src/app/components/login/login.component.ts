@@ -26,8 +26,13 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
       this.auth.login(this.loginForm.value).subscribe(
         (result) => {
-          console.log(result);
-          this.router.navigate(['/admin']);
+          if(result.role === 'employee'){
+            this.router.navigate(['/employee-dashboard']);
+          }else{
+            this.router.navigate(['/admin']);
+           
+          }
+          
         },
         (err: Error) => {
           alert(err.message);
