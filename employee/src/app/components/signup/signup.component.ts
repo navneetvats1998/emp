@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup , FormBuilder } from '@angular/forms';
+import { FormGroup , FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { DatastorageService } from 'src/app/modules/admin/components/datastorage.service';
 import { AuthService } from '../../services/auth/auth.service';
+
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -9,8 +11,8 @@ import { AuthService } from '../../services/auth/auth.service';
 })
 export class SignUpComponent implements OnInit {
 signUpForm!:FormGroup;
-constructor( private auth :AuthService,private router: Router,
-  private formBuilder: FormBuilder) {
+constructor( private auth :AuthService,private router: Router,public storage :DatastorageService
+  ,private formBuilder: FormBuilder) {
 
   this.createValidationForm();
 
@@ -23,21 +25,23 @@ constructor( private auth :AuthService,private router: Router,
   }
   createValidationForm() {
     this.signUpForm = this.formBuilder.group({
-      email: [''],
-      password:[''],
+      email: ['',Validators.email],
+      password:['',Validators.required],
       role:['employee'],
-      username:[''],
+      username:['',Validators.required],
       contact:['']
     })}
 
   onSubmit(): void {
+    debugger
     if (this.signUpForm.valid) {
       console.log(this.signUpForm.value)
+      console.log(this.storage.data);
       this.auth.Signup(this.signUpForm.value)
     
           this.router.navigate(['/login']);
-    debugger
-  console.log( localStorage.getItem('data')
+   
+  console.log( this.auth.storate
   
   )   
     }
