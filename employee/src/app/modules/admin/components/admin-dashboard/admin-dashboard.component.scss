@@ -14,10 +14,21 @@ table {
 
 /* Border */
 .mat-form-field-appearance-outline .mat-form-field-outline {
-  color: rgb(255, 255, 255);
+  color: blue;
   /* background-color: white; */
 }
 /* Font color */
 input.mat-input-element {
-  color: rgb(0, 0, 0);
+  color: blue;
+}
+.mat-icon{
+color: blue;
+}
+.btn{
+  width: 10%!important;
+  height: 10%!important;
+  color: white!important;
+  background-color: blue;
+  border-radius: 7px!important;
+  border-color: blue;
 }
