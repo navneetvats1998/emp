@@ -9,7 +9,8 @@ import { LoginComponent } from './components/login/login.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { ReactiveFormsModule } from '@angular/forms';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MaterialComponentsModule } from './material-component.module';
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,6 +24,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     // FontAwesomeModule,
     // NgbModule,
     ReactiveFormsModule,
+    BrowserAnimationsModule,
+    MaterialComponentsModule
   ],
   providers: [],
   bootstrap: [AppComponent],
